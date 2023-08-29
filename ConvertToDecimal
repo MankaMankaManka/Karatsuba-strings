@@ -1,0 +1,85 @@
+#include <iostream>
+#include <string>
+
+std::string addStrings(const std::string& num1, const std::string& num2) {
+    int i = num1.size() - 1;
+    int j = num2.size() - 1;
+    int carry = 0;
+    std::string result = "";
+
+    while (i >= 0 || j >= 0 || carry) {
+        int sum = carry;
+        if (i >= 0) sum += num1[i] - '0';
+        if (j >= 0) sum += num2[j] - '0';
+
+        carry = sum / 10;
+        sum %= 10;
+
+        result = static_cast<char>(sum + '0') + result;
+
+        i--;
+        j--;
+    }
+
+    return result;
+}
+
+std::string multiplyStrings(const std::string& num1, int digit) {
+    int carry = 0;
+    std::string result = "";
+
+    for (int i = num1.size() - 1; i >= 0; i--) {
+        int product = (num1[i] - '0') * digit + carry;
+        carry = product / 10;
+        product %= 10;
+
+        result = static_cast<char>(product + '0') + result;
+    }
+
+    if (carry > 0) {
+        result = static_cast<char>(carry + '0') + result;
+    }
+
+    return result;
+}
+
+std::string convertToBase10(const std::string& number, int base) {
+    std::string decimalResult = "0";
+    std::string baseString = "1";
+
+    for (int i = number.size() - 1; i >= 0; i--) {
+        int digitValue;
+        if (std::isdigit(number[i])) {
+            digitValue = number[i] - '0';
+        } else {
+            digitValue = number[i] - 'A' + 10; // Handle hexadecimal digits
+        }
+
+        // Multiply the current result by the base and add the digit's value
+        for (int j = 0; j < digitValue; j++) {
+            decimalResult = addStrings(decimalResult, baseString);
+        }
+
+        // Multiply the base string by the base for the next iteration
+        baseString = multiplyStrings(baseString, base);
+    }
+
+    return decimalResult;
+}
+
+int main() {
+    std::string number;
+    int base;
+
+    std::cout << "Enter the number (as a string): ";
+    std::cin >> number;
+
+    std::cout << "Enter the base of the number: ";
+    std::cin >> base;
+
+    std::string decimalNumber = convertToBase10(number, base);
+
+    std::cout << "The decimal representation is: " << decimalNumber << std::endl;
+
+    return 0;
+}
